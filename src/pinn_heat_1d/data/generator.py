@@ -77,8 +77,11 @@ class Generator:
             raise ValueError(f"[ERROR] t_min = {t_min} must be greater than zero.")
 
         if t_min >= t_max:
-            raise ValueError(f"[ERROR] tmin = {t_min} must be smaller than t_max = {t_max}.")
+            raise ValueError(f"[ERROR] t_min = {t_min} must be smaller than t_max = {t_max}.")
 
+        if x_min >= x_max:
+            raise ValueError(f"[ERROR] x_min = {x_max} must be smaller than x_max = {x_max}.")
+        
         # Set class attributes
         self.n_interior = n_interior
         self.n_initial = n_initial
