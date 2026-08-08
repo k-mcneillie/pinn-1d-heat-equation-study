@@ -16,7 +16,7 @@ from .generator import HeatEquationData
 # =============================
 # Utilities Functions
 # =============================
-def load_dataset(path: Path, device) -> HeatEquationData:
+def load_dataset(path: Path) -> HeatEquationData:
     """Load a heat equation dataset from disk.
     Args:
         path: Path to the saved dataset.
