@@ -1,7 +1,10 @@
 """Tests for random seed utilities."""
+
 import numpy as np
 import torch
+
 from pinn_heat_1d.utils.seed import set_seed
+
 
 def test_set_seed_reproduces_random_values() -> None:
     """The same seed produces the same random values."""

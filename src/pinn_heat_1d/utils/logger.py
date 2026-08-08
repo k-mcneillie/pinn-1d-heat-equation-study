@@ -1,10 +1,11 @@
-# logger.py 
+# logger.py
 # - Initialise logging for project.
 
 # =============================
 # Import Libraries
 # =============================
 from __future__ import annotations
+
 import logging
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from pathlib import Path
 # =============================
 _LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
 _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 # =============================
 # Configure Logger
@@ -48,7 +50,7 @@ def configure_logger(
     for handler in logger.handlers[:]:
         handler.close()
         logger.removeHandler(handler)
-    
+
     formatter = logging.Formatter(
         "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
     )
@@ -59,5 +61,5 @@ def configure_logger(
     console_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
-    
+
     return logger

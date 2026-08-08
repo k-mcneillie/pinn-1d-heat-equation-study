@@ -1,9 +1,12 @@
 import pytest
 import torch
+
 from pinn_heat_1d.data.generator import Generator
+
 
 class TestGenerator:
     """Tests for Generator."""
+
     def test_generate_returns_expected_shapes(self) -> None:
         """Generated datasets have the expected shapes."""
         generator = Generator(
@@ -75,6 +78,7 @@ class TestGenerator:
         assert torch.equal(data_1.interior, data_2.interior)
         assert torch.equal(data_1.initial, data_2.initial)
         assert torch.equal(data_1.boundary, data_2.boundary)
+
     @pytest.mark.parametrize(
         ("parameter", "value"),
         [
@@ -83,7 +87,6 @@ class TestGenerator:
             ("n_boundary", 0),
         ],
     )
-
     def test_rejects_non_positive_point_counts(
         self,
         parameter: str,
@@ -98,7 +101,7 @@ class TestGenerator:
         }
         with pytest.raises(ValueError):
             Generator(**kwargs)
-            
+
     def test_rejects_invalid_spatial_domain(self) -> None:
         """An invalid spatial domain raises ValueError."""
         with pytest.raises(ValueError):
@@ -109,6 +112,7 @@ class TestGenerator:
                 x_min=1.0,
                 x_max=0.0,
             )
+
     def test_rejects_negative_initial_time(self) -> None:
         """A negative initial time raises ValueError."""
         with pytest.raises(ValueError):
@@ -118,6 +122,7 @@ class TestGenerator:
                 n_boundary=10,
                 t_min=-1.0,
             )
+
     def test_rejects_invalid_temporal_domain(self) -> None:
         """An invalid temporal domain raises ValueError."""
         with pytest.raises(ValueError):

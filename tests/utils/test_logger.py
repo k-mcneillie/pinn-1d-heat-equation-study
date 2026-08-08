@@ -1,6 +1,9 @@
 """Tests for logging utilities."""
+
 from pathlib import Path
+
 from pinn_heat_1d.utils.logger import configure_logger
+
 
 def test_configure_logger_creates_log_file(tmp_path: Path) -> None:
     """Configured logger writes messages to the specified log file."""

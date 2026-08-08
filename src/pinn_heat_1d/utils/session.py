@@ -1,4 +1,4 @@
-# session.py 
+# session.py
 # - Session management utilities.
 
 # =============================
@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+
 import torch
 
 from .logger import configure_logger
@@ -18,6 +19,7 @@ from .seed import set_seed
 # =============================
 _DEFAULT_OUTPUT_ROOT = Path("outputs")
 _TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
+
 
 # =============================
 # Session Class
@@ -33,11 +35,12 @@ class Session:
         name: Experiment name.
         output_root: Root directory in which session directories are created.
     """
+
     def __init__(
         self,
         name: str,
         *,
-        seed: init = 42, 
+        seed: int = 42,
         device: str = "cpu",
         output_root: Path = _DEFAULT_OUTPUT_ROOT,
     ) -> None:
