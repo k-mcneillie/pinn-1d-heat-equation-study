@@ -1,9 +1,8 @@
+from pathlib import Path
 
 from pinn_heat_1d.analytical import analytical_solution
 from pinn_heat_1d.data.utils import load_dataset
 from pinn_heat_1d.utils.session import Session
-
-from pathlib import Path
 
 session = Session("test-analytical-method", seed=42, device="cpu")
 
