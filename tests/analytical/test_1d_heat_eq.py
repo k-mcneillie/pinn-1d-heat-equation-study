@@ -3,7 +3,9 @@
 import pytest
 import torch
 
-from pinn_heat_1d.analytical import analytical_solution
+from pinn_study.analytical.heat_equation_1D import HeatEquation1D
+
+analytical_solution = HeatEquation1D().compute
 
 
 def test_initial_condition() -> None:

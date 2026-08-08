@@ -23,6 +23,9 @@ dependencies = [
 dev = [
     "pytest>=8.0",
     "ruff>=0.8",
+    "ipykernel>=6.0",
+    "notebook>=7.0",
+    "jupyterlab>=4.0",
 ]
 
 [tool.setuptools.packages.find]

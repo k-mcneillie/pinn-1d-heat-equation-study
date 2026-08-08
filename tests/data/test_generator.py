@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from pinn_heat_1d.data.generator import Generator
+from pinn_study.data.generator import Generator
 
 
 class TestGenerator:

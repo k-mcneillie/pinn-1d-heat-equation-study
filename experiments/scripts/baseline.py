@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from pinn_heat_1d.analytical import analytical_solution
-from pinn_heat_1d.data.utils import load_dataset
-from pinn_heat_1d.utils.session import Session
+from pinn_study.analytical.heat_equation_1D import HeatEquation1D
+from pinn_study.data.utils import load_dataset
+from pinn_study.utils.session import Session
 
 session = Session("test-analytical-method", seed=42, device="cpu")
 
@@ -16,4 +16,4 @@ logger.info("Dataset loaded...")
 x = data.initial[:, 0]
 t = data.initial[:, 1]
 
-u_exact = analytical_solution(x, t)
+u_exact = HeatEquation1D.compute(x, t)

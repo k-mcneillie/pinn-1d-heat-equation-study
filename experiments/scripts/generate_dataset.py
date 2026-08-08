@@ -1,7 +1,7 @@
 import torch
 
-from pinn_heat_1d.data.generator import Generator
-from pinn_heat_1d.utils.session import Session
+from pinn_study.data.generator import Generator
+from pinn_study.utils.session import Session
 
 session = Session("test-dataset-gen", seed=42, device="cpu")
 

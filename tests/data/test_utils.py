@@ -5,8 +5,8 @@ from pathlib import Path
 import pytest
 import torch
 
-from pinn_heat_1d.data.generator import HeatEquationData
-from pinn_heat_1d.data.utils import load_dataset
+from pinn_study.data.generator import HeatEquationData
+from pinn_study.data.utils import load_dataset
 
 
 def test_load_dataset(tmp_path: Path) -> None:

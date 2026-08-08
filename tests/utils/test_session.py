@@ -4,7 +4,7 @@ from pathlib import Path
 
 import torch
 
-from pinn_heat_1d.utils.session import Session
+from pinn_study.utils.session import Session
 
 
 def test_session_creates_output_directory(tmp_path: Path) -> None:
