@@ -1,10 +1,11 @@
-# logger.py 
+# logger.py
 # - Initialise logging for project.
 
 # =============================
 # Import Libraries
 # =============================
 from __future__ import annotations
+
 import logging
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from pathlib import Path
 # =============================
 _LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
 _DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 # =============================
 # Configure Logger
@@ -40,30 +42,24 @@ def configure_logger(
     Raises:
         OSError: If the parent directory of ``log_file`` cannot be created.
     """
+    log_file.parent.mkdir(parents=True, exist_ok=True)
     logger = logging.getLogger(name)
-    logger.setLevel(level)
+    logger.setLevel(logging.INFO)
     logger.propagate = False
 
-    if logger.handlers:
-        return logger
-        
+    for handler in logger.handlers[:]:
+        handler.close()
+        logger.removeHandler(handler)
+
     formatter = logging.Formatter(
-        fmt=_LOG_FORMAT,
-        datefmt=_DATE_FORMAT,
+        "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
     )
 
-    log_file.parent.mkdir(parents=True, exist_ok=True)
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(level)
-    console_handler.setFormatter(formatter)
-    file_handler = logging.FileHandler(
-        log_file,
-        encoding="utf-8",
-    )
-
-    file_handler.setLevel(level)
+    file_handler = logging.FileHandler(log_file)
     file_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
 
     return logger

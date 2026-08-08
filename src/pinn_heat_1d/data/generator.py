@@ -8,13 +8,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import torch 
+import torch
 
-# A data class uses the @dataclass decorator to automatically generate special 
+
+# A data class uses the @dataclass decorator to automatically generate special
 # methods to handle creation, printing and comparisons.
-# By default, dataclasses are mutable meaning attributes can be altered at any 
-# time. Adding frozen=True modifies this characteristic to make the instance 
-# immutable, blocking modification of the objects attributes raising a 
+# By default, dataclasses are mutable meaning attributes can be altered at any
+# time. Adding frozen=True modifies this characteristic to make the instance
+# immutable, blocking modification of the objects attributes raising a
 # FrozenInstanceError error.
 @dataclass(frozen=True)
 class HeatEquationData:
@@ -30,6 +31,7 @@ class HeatEquationData:
     interior: torch.Tensor
     initial: torch.Tensor
     boundary: torch.Tensor
+
 
 class Generator:
     """
@@ -50,12 +52,13 @@ class Generator:
         ValueError: If any number of points is non-positive, the spatial
             domain is invalid, or the temporal domain is invalid.
     """
+
     def __init__(
         self,
         n_interior: int,
-        n_initial: int, 
+        n_initial: int,
         n_boundary: int,
-        *,                          # All arguments after this must be kwargs.
+        *,  # All arguments after this must be kwargs.
         x_min: float = 0.0,
         x_max: float = 1.0,
         t_min: float = 0.0,
@@ -64,20 +67,33 @@ class Generator:
         device: torch.device | str = "cpu",
     ) -> None:
         # Check argument magnitudes are valid.
-        if n_interior <=0:
-            raise ValueError(f"[ERROR] n_interior = {n_interior} must be greater than zero.")
+        if n_interior <= 0:
+            raise ValueError(
+                f"[ERROR] n_interior = {n_interior} must be greater than zero."
+            )
 
-        if n_initial <=0:
-            raise ValueError(f"[ERROR] n_initial = {n_initial} must be greater than zero.")
+        if n_initial <= 0:
+            raise ValueError(
+                f"[ERROR] n_initial = {n_initial} must be greater than zero."
+            )
 
-        if n_boundary <=0:
-            raise ValueError(f"[ERROR] n_boundary = {n_boundary} must be greater than zero.")   
+        if n_boundary <= 0:
+            raise ValueError(
+                f"[ERROR] n_boundary = {n_boundary} must be greater than zero."
+            )
 
         if t_min < 0:
             raise ValueError(f"[ERROR] t_min = {t_min} must be greater than zero.")
 
         if t_min >= t_max:
-            raise ValueError(f"[ERROR] tmin = {t_min} must be smaller than t_max = {t_max}.")
+            raise ValueError(
+                f"[ERROR] t_min = {t_min} must be smaller than t_max = {t_max}."
+            )
+
+        if x_min >= x_max:
+            raise ValueError(
+                f"[ERROR] x_min = {x_max} must be smaller than x_max = {x_max}."
+            )
 
         # Set class attributes
         self.n_interior = n_interior
@@ -101,12 +117,12 @@ class Generator:
             A HeatEquationData object containing interior, initial and boundary points.
         """
         return HeatEquationData(
-            interior = self._generate_interior_points(),
-            initial = self._generate_initial_points(),
-            boundary = self._generate_boundary_points(),
+            interior=self._generate_interior_points(),
+            initial=self._generate_initial_points(),
+            boundary=self._generate_boundary_points(),
         )
 
-    def _generate_interior_points(self) -> Tensor:
+    def _generate_interior_points(self) -> torch.Tensor:
         """
         Generate uniformly distributed interior points.
 
@@ -126,7 +142,7 @@ class Generator:
 
         return torch.column_stack((x, t))
 
-    def _generate_initial_points(self) -> Tensor:
+    def _generate_initial_points(self) -> torch.Tensor:
         """Generate points on the initial-time boundary.
 
         Returns:
@@ -141,7 +157,7 @@ class Generator:
 
         return torch.column_stack((x, t))
 
-    def _generate_boundary_points(self) -> Tensor:
+    def _generate_boundary_points(self) -> torch.Tensor:
         """
         Generate points on the two spatial boundaries.
 
@@ -186,7 +202,7 @@ class Generator:
         n_points: int,
         minimum: float,
         maximum: float,
-    ) -> Tensor:
+    ) -> torch.Tensor:
         """
         Generate uniformly distributed values within an interval.
 
@@ -199,7 +215,5 @@ class Generator:
             One-dimensional tensor containing uniformly distributed values.
         """
         return minimum + (maximum - minimum) * torch.rand(
-            n_points,
-            generator = self.rng,
-            device = self.device
+            n_points, generator=self.rng, device=self.device
         )
