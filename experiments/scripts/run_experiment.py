@@ -224,9 +224,9 @@ def build_validation_data(
         "t": t.cpu().numpy(),
         "X": X.cpu().numpy(),
         "T": T.cpu().numpy(),
-        "prediction": prediction.cpu().numpy(),
-        "analytical": analytical.cpu().numpy(),
-        "residual": residual.cpu().numpy(),
+        "prediction": prediction.detach().cpu().numpy(),
+        "analytical": analytical.detach().cpu().numpy(),
+        "residual": residual.detach().cpu().numpy(),
     }
 
 
