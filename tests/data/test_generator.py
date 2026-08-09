@@ -1,15 +1,15 @@
 import pytest
 import torch
 
-from pinn_study.data.generator import Generator
+from pinn_study.data.generator import HeatEquationGenerator
 
 
-class TestGenerator:
-    """Tests for Generator."""
+class TestHeatEquationGenerator:
+    """Tests for HeatEquationGenerator."""
 
     def test_generate_returns_expected_shapes(self) -> None:
         """Generated datasets have the expected shapes."""
-        generator = Generator(
+        generator = HeatEquationGenerator(
             n_interior=100,
             n_initial=10,
             n_boundary=10,
@@ -22,7 +22,7 @@ class TestGenerator:
 
     def test_interior_points_are_within_domain(self) -> None:
         """Interior points lie within the spatial and temporal domains."""
-        generator = Generator(
+        generator = HeatEquationGenerator(
             n_interior=1_000,
             n_initial=10,
             n_boundary=10,
@@ -38,7 +38,7 @@ class TestGenerator:
 
     def test_initial_points_are_at_initial_time(self) -> None:
         """Initial-condition points all have t equal to t_min."""
-        generator = Generator(
+        generator = HeatEquationGenerator(
             n_interior=100,
             n_initial=100,
             n_boundary=10,
@@ -49,7 +49,7 @@ class TestGenerator:
 
     def test_boundary_points_are_on_spatial_boundaries(self) -> None:
         """Boundary points lie on either spatial boundary."""
-        generator = Generator(
+        generator = HeatEquationGenerator(
             n_interior=100,
             n_initial=10,
             n_boundary=100,
@@ -61,13 +61,13 @@ class TestGenerator:
 
     def test_seed_produces_reproducible_data(self) -> None:
         """The same seed produces identical datasets."""
-        generator_1 = Generator(
+        generator_1 = HeatEquationGenerator(
             n_interior=100,
             n_initial=10,
             n_boundary=10,
             seed=42,
         )
-        generator_2 = Generator(
+        generator_2 = HeatEquationGenerator(
             n_interior=100,
             n_initial=10,
             n_boundary=10,
@@ -100,12 +100,12 @@ class TestGenerator:
             parameter: value,
         }
         with pytest.raises(ValueError):
-            Generator(**kwargs)
+            HeatEquationGenerator(**kwargs)
 
     def test_rejects_invalid_spatial_domain(self) -> None:
         """An invalid spatial domain raises ValueError."""
         with pytest.raises(ValueError):
-            Generator(
+            HeatEquationGenerator(
                 n_interior=100,
                 n_initial=10,
                 n_boundary=10,
@@ -116,7 +116,7 @@ class TestGenerator:
     def test_rejects_negative_initial_time(self) -> None:
         """A negative initial time raises ValueError."""
         with pytest.raises(ValueError):
-            Generator(
+            HeatEquationGenerator(
                 n_interior=100,
                 n_initial=10,
                 n_boundary=10,
@@ -126,10 +126,46 @@ class TestGenerator:
     def test_rejects_invalid_temporal_domain(self) -> None:
         """An invalid temporal domain raises ValueError."""
         with pytest.raises(ValueError):
-            Generator(
+            HeatEquationGenerator(
                 n_interior=100,
                 n_initial=10,
                 n_boundary=10,
                 t_min=1.0,
                 t_max=1.0,
             )
+
+    def test_parameters_returns_generator_parameters(self) -> None:
+        """Generator parameters match the configured values."""
+        generator = HeatEquationGenerator(
+            n_interior=100,
+            n_initial=10,
+            n_boundary=10,
+            x_min=0.0,
+            x_max=1.0,
+            t_min=0.0,
+            t_max=1.0,
+        )
+        assert generator.parameters == {
+            "n_interior": 100,
+            "n_initial": 10,
+            "n_boundary": 10,
+            "x_min": 0.0,
+            "x_max": 1.0,
+            "t_min": 0.0,
+            "t_max": 1.0,
+        }
+
+    def test_parameters_returns_copy(self) -> None:
+        """Modifying parameters does not modify the generator."""
+        generator = HeatEquationGenerator(
+            n_interior=100,
+            n_initial=10,
+            n_boundary=10,
+            x_min=0.0,
+            x_max=1.0,
+            t_min=0.0,
+            t_max=1.0,
+        )
+        parameters = generator.parameters
+        parameters["n_interior"] = 999
+        assert generator.n_interior == 100
