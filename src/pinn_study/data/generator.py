@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import torch
 
@@ -33,7 +34,7 @@ class HeatEquationData:
     boundary: torch.Tensor
 
 
-class Generator:
+class HeatEquationGenerator:
     """
     Generate collocation points for a 1D heat equation study.
 
@@ -92,7 +93,7 @@ class Generator:
 
         if x_min >= x_max:
             raise ValueError(
-                f"[ERROR] x_min = {x_max} must be smaller than x_max = {x_max}."
+                f"[ERROR] x_min = {x_min} must be smaller than x_max = {x_max}."
             )
 
         # Set class attributes
@@ -107,6 +108,59 @@ class Generator:
 
         self.rng = torch.Generator().manual_seed(seed)
         self.device = device
+
+    # A property decorator turns a class method into a read-only property and
+    # allows you to access a method like an attribute. This is useful for
+    # encapsulation and data hiding, as it allows you to control access to the
+    # underlying data while still providing a convenient interface for users of
+    # the class.
+    @property
+    def parameters(self) -> dict[str, Any]:
+        """
+        Get the generator parameters.
+
+        Returns:
+            A dictionary containing the generator parameters.
+        """
+        return {
+            "n_interior": self.n_interior,
+            "n_initial": self.n_initial,
+            "n_boundary": self.n_boundary,
+            "x_min": self.x_min,
+            "x_max": self.x_max,
+            "t_min": self.t_min,
+            "t_max": self.t_max,
+        }
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the generator.
+
+        Returns:
+            A string representation of the generator.
+        """
+        return (
+            f"Generator("
+            f"n_interior={self.n_interior}, "
+            f"n_initial={self.n_initial}, "
+            f"n_boundary={self.n_boundary}, "
+            f"x_min={self.x_min}, "
+            f"x_max={self.x_max}, "
+            f"t_min={self.t_min}, "
+            f"t_max={self.t_max}, "
+            f"seed={self.rng.initial_seed()}, "
+            f"device={self.device})"
+        )
+
+    @property
+    def name(self) -> str:
+        """
+        Get the name of the generator.
+
+        Returns:
+            A string containing the name of the generator.
+        """
+        return type(self).__name__
 
     # Main generation method
     def generate(self) -> HeatEquationData:
