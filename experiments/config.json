@@ -1,0 +1,16 @@
+{
+  "experiment_name": "pinn-heat-1d",
+  "run_name": "run-1",
+  "seed": 42,
+  "device": "cpu",
+  "n_interior": 1000,
+  "n_initial": 100,
+  "n_boundary": 100,
+  "epochs": 5000,
+  "learning_rate": 0.001,
+  "hidden_dims": [64, 64, 64],
+  "mlflow": false,
+  "tracking_uri": "file:./mlruns",
+  "alpha": 1.0,
+  "output_root": "outputs"
+}

@@ -37,7 +37,8 @@ def test_mlflow_run_lifecycle(tmp_path: Path) -> None:
     experiment.end_run()
 
     client = mlflow.tracking.MlflowClient(tracking_uri=config.tracking_uri)
-    runs = client.search_runs([config.experiment_name], order_by=["attributes.start_time DESC"])
+    experiment_id = client.get_experiment_by_name(config.experiment_name).experiment_id
+    runs = client.search_runs([experiment_id], order_by=["attributes.start_time DESC"])
 
     assert runs
     run = runs[0]

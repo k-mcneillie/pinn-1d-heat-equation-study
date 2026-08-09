@@ -49,8 +49,8 @@ def visualise_experiment(
     # Data Visualisations
     # =============================
     data_result = visualise_dataset(
-        inputs=dataset.inputs if dataset is not None else None,
-        targets=dataset.targets if dataset is not None else None,
+        inputs=getattr(dataset, "inputs", None) if dataset is not None else None,
+        targets=getattr(dataset, "targets", None) if dataset is not None else None,
         output_dir=output_dir / "data",
         boundary=getattr(dataset, "boundary", None) if dataset is not None else None,
         initial=getattr(dataset, "initial", None) if dataset is not None else None,

@@ -1,0 +1,16 @@
+{
+  "experiment_name": "pinn-heat-1d-mlflow",
+  "run_name": "run-mlflow",
+  "seed": 42,
+  "device": "cpu",
+  "n_interior": 1000,
+  "n_initial": 100,
+  "n_boundary": 100,
+  "epochs": 200,
+  "learning_rate": 0.001,
+  "hidden_dims": [32, 32],
+  "mlflow": true,
+  "tracking_uri": "file:./mlruns",
+  "alpha": 1.0,
+  "output_root": "outputs"
+}

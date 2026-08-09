@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -15,9 +16,14 @@ class MLflowExperiment:
 
     def __init__(self, config: MLflowConfig) -> None:
         self.config = config
+        self._allow_file_store_if_needed()
         mlflow.set_tracking_uri(self.config.tracking_uri)
         self._set_experiment()
         self._active_run = None
+
+    def _allow_file_store_if_needed(self) -> None:
+        if self.config.tracking_uri.startswith("file:"):
+            os.environ.setdefault("MLFLOW_ALLOW_FILE_STORE", "true")
 
     def _set_experiment(self) -> None:
         if self.config.artifact_location:
