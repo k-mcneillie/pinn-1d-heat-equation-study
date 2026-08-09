@@ -12,6 +12,9 @@ from typing import Any
 import torch
 
 
+# =============================
+# Heat Equation Data Class
+# =============================
 # A data class uses the @dataclass decorator to automatically generate special
 # methods to handle creation, printing and comparisons.
 # By default, dataclasses are mutable meaning attributes can be altered at any
@@ -34,6 +37,17 @@ class HeatEquationData:
     boundary: torch.Tensor
 
 
+# =============================
+# Heat Equation Generator
+# =============================
+
+
+# The HeatEquationGenerator class is responsible for generating collocation points
+# for a 1D heat equation study. It takes in parameters such as the number of
+# interior, initial, and boundary points which represent the distribution of points
+# in the spatial and temporal domains as well as the spatial and temporal
+# boundaries. The class also allows for setting a random seed for reproducibility
+# and specifying the device (CPU, CUDA, or MPS) for tensor operations.
 class HeatEquationGenerator:
     """
     Generate collocation points for a 1D heat equation study.

@@ -5,7 +5,7 @@ import torch
 
 from pinn_study.analytical.heat_equation_1D import HeatEquation1D
 
-analytical_solution = HeatEquation1D().compute
+analytical_solution = HeatEquation1D()
 
 
 def test_initial_condition() -> None:
