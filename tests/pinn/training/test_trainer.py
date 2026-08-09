@@ -10,7 +10,6 @@ import logging
 import pytest
 import torch
 import torch.nn as nn
-from pinn_study.pinn.training.trainer import Trainer
 
 from pinn_study.pinn.loss.config import LossConfig
 from pinn_study.pinn.loss.pinn_loss import PINNLoss
@@ -25,6 +24,7 @@ from pinn_study.pinn.training.config import (
     SchedulerConfig,
     TrainingConfig,
 )
+from pinn_study.pinn.training.trainer import Trainer
 
 
 # =============================

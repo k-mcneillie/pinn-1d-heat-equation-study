@@ -6,12 +6,12 @@
 # Import Libraries
 # =============================
 import torch
+
+from pinn_study.pinn.training.config import SchedulerConfig
 from pinn_study.pinn.training.scheduler import (
     WarmupScheduler,
     create_scheduler,
 )
-
-from pinn_study.pinn.training.config import SchedulerConfig
 
 
 # =============================
