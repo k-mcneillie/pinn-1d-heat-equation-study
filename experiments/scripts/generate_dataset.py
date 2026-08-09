@@ -1,6 +1,6 @@
-import torch
-
-from pinn_study.data.generator import Generator
+from pinn_study.data.card import DatasetCard
+from pinn_study.data.generator import HeatEquationGenerator
+from pinn_study.data.utils import save_dataset
 from pinn_study.utils.session import Session
 
 session = Session("test-dataset-gen", seed=42, device="cpu")
@@ -16,12 +16,29 @@ kwargs = {
     "device": session.device,
 }
 
-generator = Generator(**args, **kwargs)
+generator = HeatEquationGenerator(**args, **kwargs)
 
-data = generator.generate()
+dataset = generator.generate()
 logger.info("Dataset generated...")
 
-torch.save(data, session.path("data.pt"))
+card = DatasetCard(
+    generator=generator.name,
+    parameters=generator.parameters,
+    seed=session.seed,
+    device=session.device,
+    description=(
+        "- Collocation points generated for the 1D Heat Equation.",
+        "- PINN Study",
+        "- Test",
+    ),
+)
+logger.info("Dataset card created...")
+
+save_dataset(
+    dataset,
+    session.output_dir,
+    card=card,
+)
 logger.info(f"Dataset saved to: {session.path('data.pt')}...")
 
 logger.info("Dataset generation complete.")
