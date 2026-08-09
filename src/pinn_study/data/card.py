@@ -11,6 +11,9 @@ from pathlib import Path
 from typing import Any
 
 
+# =============================
+# Dataset Card
+# =============================
 class DatasetCard:
     """Create documentation for a generated dataset."""
 

@@ -13,11 +13,10 @@ import torch
 from .card import DatasetCard
 from .generator import HeatEquationData
 
+
 # =============================
 # Utilities Functions
 # =============================
-
-
 def save_dataset(
     dataset: dict[str, torch.Tensor],
     output_dir: Path,

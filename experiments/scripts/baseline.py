@@ -16,4 +16,4 @@ logger.info("Dataset loaded...")
 x = data.initial[:, 0]
 t = data.initial[:, 1]
 
-u_exact = HeatEquation1D.compute(x, t)
+u_exact = HeatEquation1D()(x, t)
