@@ -8,6 +8,7 @@
 from torch import Tensor
 
 from pinn_study.pinn.loss.config import LossConfig
+from pinn_study.pinn.loss.result import PINNLossResult
 
 
 # =============================
@@ -53,14 +54,14 @@ class PINNLoss:
     def __call__(
         self,
         losses: dict[str, Tensor],
-    ) -> Tensor:
+    ) -> PINNLossResult:
         """Calculate the weighted total loss.
 
         Args:
             losses: Mapping of constraint names to scalar losses.
 
         Returns:
-            Weighted total loss.
+            Weighted total loss and individual constraint losses.
 
         Raises:
             ValueError: If a configured constraint is missing.
@@ -72,6 +73,11 @@ class PINNLoss:
                 f"Missing losses for configured constraints: {sorted(missing)}"
             )
 
-        return sum(
+        total = sum(
             self.config.weights[name] * losses[name] for name in self.config.weights
+        )
+
+        return PINNLossResult(
+            total=total,
+            components=losses.copy(),
         )
