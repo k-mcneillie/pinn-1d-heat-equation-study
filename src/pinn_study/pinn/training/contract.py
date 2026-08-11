@@ -6,7 +6,7 @@
 # =============================
 from typing import Protocol
 
-from torch import Tensor
+from pinn_study.pinn.loss.pinn_loss import PINNLossResult
 
 
 # =============================
@@ -17,8 +17,8 @@ from torch import Tensor
 class TrainingStep(Protocol):
     """Contract for a single model training step."""
 
-    def __call__(self) -> Tensor:
-        """Calculate and return the current training loss."""
+    def __call__(self) -> PINNLossResult:
+        """Calculate the current training loss and components."""
         ...
 
 

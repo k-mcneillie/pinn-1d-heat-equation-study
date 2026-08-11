@@ -8,7 +8,7 @@ session = Session("test-analytical-method", seed=42, device="cpu")
 
 logger = session.logger
 
-dataset_path = Path("outputs/20260808_215130_test-dataset-gen/data.pt")
+dataset_path = Path("outputs/20260809_203328_test-dataset-gen/data.pt")
 
 data = load_dataset(dataset_path)
 logger.info("Dataset loaded...")

@@ -12,11 +12,13 @@ import torch.nn as nn
 from torch import Tensor
 
 from pinn_study.pinn.loss.pinn_loss import PINNLoss
+from pinn_study.pinn.loss.result import PINNLossResult
 
 from .annealing import ConstantWeighting
 from .checkpoint import TrainingCheckpointManager
 from .config import TrainingConfig
 from .contract import LossWeightingStrategy, TrainingStep
+from .result import TrainingResult
 from .scheduler import WarmupScheduler, create_scheduler
 
 
@@ -36,6 +38,8 @@ class Trainer:
         training_step: TrainingStep,
         config: TrainingConfig,
         logger: logging.Logger,
+        device: torch.device,
+        *,
         loss: PINNLoss | None = None,
         weighting_strategy: LossWeightingStrategy | None = None,
         checkpoint_manager: TrainingCheckpointManager | None = None,
@@ -51,7 +55,8 @@ class Trainer:
             weighting_strategy: Optional dynamic loss weighting strategy.
             checkpoint_manager: Optional checkpoint manager.
         """
-        self.model = model
+        self.device = device
+        self.model = model.to(self.device)
         self.training_step = training_step
         self.config = config
         self.logger = logger
@@ -76,6 +81,8 @@ class Trainer:
         self.history: list[float] = []
         self.best_loss = float("inf")
         self.epochs_without_improvement = 0
+
+        self.result = TrainingResult()
 
     # =============================
     # Optimiser
@@ -116,7 +123,12 @@ class Trainer:
 
             self.optimizer.zero_grad()
 
-            loss = self.training_step()
+            loss_result = self.training_step()
+
+            if not isinstance(loss_result, PINNLossResult):
+                raise TypeError("Training step must return a PINNLossResult.")
+
+            loss = loss_result.total
 
             self._validate_loss(loss)
 
@@ -130,6 +142,18 @@ class Trainer:
 
             loss_value = loss.detach().item()
             self.history.append(loss_value)
+
+            self.result.epochs.append(epoch)
+            self.result.losses.append(loss_value)
+            self.result.learning_rates.append(
+                self.optimizer.param_groups[0]["lr"],
+            )
+
+            for name, value in loss_result.components.items():
+                self.result.loss_components.setdefault(
+                    name,
+                    [],
+                ).append(value.detach().item())
 
             self._log_epoch(epoch, loss_value)
 

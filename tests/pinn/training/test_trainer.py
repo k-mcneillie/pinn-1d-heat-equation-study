@@ -6,6 +6,7 @@
 # Import Libraries
 # =============================
 import logging
+from collections.abc import Callable
 
 import pytest
 import torch
@@ -13,6 +14,7 @@ import torch.nn as nn
 
 from pinn_study.pinn.loss.config import LossConfig
 from pinn_study.pinn.loss.pinn_loss import PINNLoss
+from pinn_study.pinn.loss.result import PINNLossResult
 from pinn_study.pinn.training.annealing import LinearWeighting
 from pinn_study.pinn.training.checkpoint import (
     TrainingCheckpointManager,
@@ -25,6 +27,8 @@ from pinn_study.pinn.training.config import (
     TrainingConfig,
 )
 from pinn_study.pinn.training.trainer import Trainer
+
+device = torch.device("cpu")
 
 
 # =============================
@@ -46,7 +50,7 @@ class SimpleModel(nn.Module):
 # =============================
 def create_training_step(
     model: nn.Module,
-) -> callable:
+) -> Callable[[], PINNLossResult]:
     """Create a simple supervised training step."""
 
     inputs = torch.tensor(
@@ -57,10 +61,49 @@ def create_training_step(
         [[2.0], [4.0], [6.0]],
     )
 
-    def training_step() -> torch.Tensor:
+    def training_step() -> PINNLossResult:
         predictions = model(inputs)
 
-        return torch.mean((predictions - targets) ** 2)
+        loss = torch.mean(
+            (predictions - targets) ** 2,
+        )
+
+        return PINNLossResult(
+            total=loss,
+            components={
+                "data": loss,
+            },
+        )
+
+    return training_step
+
+
+def create_loss_training_step(
+    model: nn.Module,
+    loss: PINNLoss,
+) -> Callable[[], PINNLossResult]:
+    """Create a training step using a PINN loss."""
+
+    inputs = torch.tensor(
+        [[1.0], [2.0], [3.0]],
+    )
+
+    targets = torch.tensor(
+        [[2.0], [4.0], [6.0]],
+    )
+
+    def training_step() -> PINNLossResult:
+        predictions = model(inputs)
+
+        data_loss = torch.mean(
+            (predictions - targets) ** 2,
+        )
+
+        return loss(
+            {
+                "data": data_loss,
+            }
+        )
 
     return training_step
 
@@ -85,6 +128,7 @@ class TestTrainer:
             training_step=create_training_step(model),
             config=TrainingConfig(epochs=5),
             logger=create_logger(),
+            device=device,
         )
 
         history = trainer.train()
@@ -107,6 +151,7 @@ class TestTrainer:
             training_step=create_training_step(model),
             config=TrainingConfig(epochs=5),
             logger=create_logger(),
+            device=device,
         )
 
         trainer.train()
@@ -137,11 +182,31 @@ class TestTrainer:
                 learning_rate=1e-2,
             ),
             logger=create_logger(),
+            device=device,
         )
 
         history = trainer.train()
 
         assert history[-1] < history[0]
+
+    def test_training_records_result(self) -> None:
+        """Training records losses, components and learning rates."""
+        model = SimpleModel()
+
+        trainer = Trainer(
+            model=model,
+            training_step=create_training_step(model),
+            config=TrainingConfig(epochs=5),
+            logger=create_logger(),
+            device=device,
+        )
+
+        trainer.train()
+
+        assert len(trainer.result.epochs) == 5
+        assert len(trainer.result.losses) == 5
+        assert len(trainer.result.learning_rates) == 5
+        assert len(trainer.result.loss_components["data"]) == 5
 
 
 # =============================
@@ -150,8 +215,8 @@ class TestTrainer:
 class TestLossValidation:
     """Tests for training loss validation."""
 
-    def test_rejects_non_tensor_loss(self) -> None:
-        """Non-tensor losses are rejected."""
+    def test_rejects_non_loss_result(self) -> None:
+        """Training steps returning invalid results are rejected."""
         model = SimpleModel()
 
         def invalid_training_step() -> float:
@@ -162,11 +227,12 @@ class TestLossValidation:
             training_step=invalid_training_step,
             config=TrainingConfig(),
             logger=create_logger(),
+            device=device,
         )
 
         with pytest.raises(
             TypeError,
-            match="Training loss must be a torch.Tensor",
+            match="Training step must return a PINNLossResult",
         ):
             trainer.train()
 
@@ -174,10 +240,17 @@ class TestLossValidation:
         """Non-scalar losses are rejected."""
         model = SimpleModel()
 
-        def invalid_training_step() -> torch.Tensor:
-            return torch.tensor(
+        def invalid_training_step() -> PINNLossResult:
+            loss = torch.tensor(
                 [1.0, 2.0],
                 requires_grad=True,
+            )
+
+            return PINNLossResult(
+                total=loss,
+                components={
+                    "data": loss,
+                },
             )
 
         trainer = Trainer(
@@ -185,6 +258,7 @@ class TestLossValidation:
             training_step=invalid_training_step,
             config=TrainingConfig(),
             logger=create_logger(),
+            device=device,
         )
 
         with pytest.raises(
@@ -217,6 +291,7 @@ class TestSchedulerIntegration:
                 ),
             ),
             logger=create_logger(),
+            device=device,
         )
 
         initial_lr = trainer.optimizer.param_groups[0]["lr"]
@@ -251,12 +326,13 @@ class TestGradientClipping:
             training_step=create_training_step(model),
             config=config,
             logger=create_logger(),
+            device=device,
         )
 
         trainer.optimizer.zero_grad()
 
-        loss = trainer.training_step()
-        loss.backward()
+        loss_result = trainer.training_step()
+        loss_result.total.backward()
 
         trainer._clip_gradients()
 
@@ -278,10 +354,17 @@ class TestEarlyStopping:
         """Early stopping terminates training after patience."""
         model = SimpleModel()
 
-        def constant_training_step() -> torch.Tensor:
-            return torch.tensor(
+        def constant_training_step() -> PINNLossResult:
+            loss = torch.tensor(
                 1.0,
                 requires_grad=True,
+            )
+
+            return PINNLossResult(
+                total=loss,
+                components={
+                    "data": loss,
+                },
             )
 
         trainer = Trainer(
@@ -296,13 +379,16 @@ class TestEarlyStopping:
                 ),
             ),
             logger=create_logger(),
+            device=device,
         )
 
         history = trainer.train()
 
         assert len(history) < 100
 
-    def test_early_stopping_disabled_runs_all_epochs(self) -> None:
+    def test_early_stopping_disabled_runs_all_epochs(
+        self,
+    ) -> None:
         """Training runs all epochs when early stopping is disabled."""
         model = SimpleModel()
 
@@ -316,6 +402,7 @@ class TestEarlyStopping:
                 ),
             ),
             logger=create_logger(),
+            device=device,
         )
 
         history = trainer.train()
@@ -329,38 +416,48 @@ class TestEarlyStopping:
 class TestLossWeightingIntegration:
     """Tests for dynamic loss weighting."""
 
-    def test_weights_are_updated_during_training(self) -> None:
+    def test_weights_are_updated_during_training(
+        self,
+    ) -> None:
         """Loss weights are updated according to the strategy."""
         model = SimpleModel()
 
         loss = PINNLoss(
             config=LossConfig(
                 weights={
-                    "pde": 0.0,
+                    "data": 0.0,
                 },
             ),
         )
 
         weighting = LinearWeighting(
-            initial={"pde": 0.0},
-            final={"pde": 1.0},
+            initial={
+                "data": 0.0,
+            },
+            final={
+                "data": 1.0,
+            },
             epochs=4,
         )
 
         trainer = Trainer(
             model=model,
-            training_step=create_training_step(model),
+            training_step=create_loss_training_step(
+                model,
+                loss,
+            ),
             config=TrainingConfig(
                 epochs=4,
             ),
             logger=create_logger(),
+            device=device,
             loss=loss,
             weighting_strategy=weighting,
         )
 
         trainer.train()
 
-        assert loss.config.weights["pde"] == 1.0
+        assert loss.config.weights["data"] == 1.0
 
 
 # =============================
@@ -369,7 +466,10 @@ class TestLossWeightingIntegration:
 class TestCheckpointIntegration:
     """Tests for checkpoint integration."""
 
-    def test_checkpoints_are_created(self, tmp_path) -> None:
+    def test_checkpoints_are_created(
+        self,
+        tmp_path,
+    ) -> None:
         """Training creates configured checkpoints."""
         model = SimpleModel()
 
@@ -389,6 +489,7 @@ class TestCheckpointIntegration:
                 ),
             ),
             logger=create_logger(),
+            device=device,
             checkpoint_manager=checkpoint_manager,
         )
 
@@ -421,6 +522,7 @@ class TestCheckpointIntegration:
                 ),
             ),
             logger=create_logger(),
+            device=device,
             checkpoint_manager=checkpoint_manager,
         )
 
@@ -482,6 +584,7 @@ class TestTrainingIntegration:
                 ),
             ),
             logger=create_logger(),
+            device=device,
             checkpoint_manager=checkpoint_manager,
         )
 
