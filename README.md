@@ -30,7 +30,7 @@ The programme runs as three sequential phases, each with its own sub-phases, not
 
 **Core**
 - Heat equation PINN: PyTorch, SIREN (sinusoidal) activations, three-term loss (PDE residual + boundary condition + initial condition), random collocation sampling.
-- Schrödinger PINN: dual real-valued output heads $u(x,t)$, $v(x,t)$ representing $\psi = u + iv$ (avoids complex-tensor autodiff entirely); coupled real/imaginary residual loss; added probability-conservation penalty term with no analogue in Phase 1.
+- Schrödinger PINN: dual real-valued output heads $$u(x,t)$$, $v(x,t)$ representing $\psi = u + iv$ (avoids complex-tensor autodiff entirely); coupled real/imaginary residual loss; added probability-conservation penalty term with no analogue in Phase 1.
 - Topological surrogate: a lightweight Bogoliubov–de Gennes (BdG) Hamiltonian data generator (`scipy.sparse.linalg.eigsh`) feeding a gradient-boosted tree baseline (XGBoost/LightGBM) for classification (trivial vs. non-trivial phase) and regression (critical scattering strength $V_m^*$, near-zero-state energy splitting).
 
 **Exploratory**
