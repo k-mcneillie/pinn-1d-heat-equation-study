@@ -8,7 +8,6 @@
 from pathlib import Path
 
 from pinn_study.pinn.training.result import TrainingResult
-
 from pinn_study.vis.api.data import visualise_dataset
 from pinn_study.vis.api.training import visualise_training
 from pinn_study.vis.api.validation import visualise_validation

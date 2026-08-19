@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from pydantic import BaseModel, Field, field_validator
 
-from pathlib import Path
 
 class MLflowConfig(BaseModel):
     """Configuration for MLflow experiment tracking."""
@@ -69,7 +70,7 @@ class ExperimentConfig(BaseModel):
         return value
 
     @classmethod
-    def load(cls, path: Path | str | None = None) -> "ExperimentConfig":
+    def load(cls, path: Path | str | None = None) -> ExperimentConfig:
         if path is None:
             path = Path("experiments/config.json")
 

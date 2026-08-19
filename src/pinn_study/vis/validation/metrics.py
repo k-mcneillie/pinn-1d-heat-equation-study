@@ -22,7 +22,7 @@ def calculate_error_metrics(
     absolute_error = error.abs()
 
     mse = torch.mean(
-        error ** 2,
+        error**2,
     )
 
     rmse = torch.sqrt(mse)
@@ -35,10 +35,7 @@ def calculate_error_metrics(
         absolute_error,
     )
 
-    relative_l2 = (
-        torch.linalg.vector_norm(error)
-        / torch.linalg.vector_norm(analytical)
-    )
+    relative_l2 = torch.linalg.vector_norm(error) / torch.linalg.vector_norm(analytical)
 
     return {
         "mse": mse.detach().item(),

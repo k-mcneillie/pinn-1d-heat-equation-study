@@ -48,7 +48,9 @@ def test_mlflow_run_lifecycle(tmp_path: Path) -> None:
 
     artifacts = client.list_artifacts(run.info.run_id)
     artifact_paths = {entry.path for entry in artifacts}
-    assert "artifact.txt" in artifact_paths or "artifact.txt" in {p.name for p in artifacts}
+    assert "artifact.txt" in artifact_paths or "artifact.txt" in {
+        p.name for p in artifacts
+    }
 
 
 def test_mlflow_git_metadata_degrades_gracefully(tmp_path: Path) -> None:
@@ -61,6 +63,13 @@ def test_mlflow_git_metadata_degrades_gracefully(tmp_path: Path) -> None:
     git_metadata = experiment.read_git_metadata(cwd=tmp_path)
 
     assert isinstance(git_metadata, dict)
-    assert "git.commit" not in git_metadata or isinstance(git_metadata["git.commit"], str)
-    assert "git.branch" not in git_metadata or isinstance(git_metadata["git.branch"], str)
-    assert "git.dirty" not in git_metadata or git_metadata["git.dirty"] in {"true", "false"}
+    assert "git.commit" not in git_metadata or isinstance(
+        git_metadata["git.commit"], str
+    )
+    assert "git.branch" not in git_metadata or isinstance(
+        git_metadata["git.branch"], str
+    )
+    assert "git.dirty" not in git_metadata or git_metadata["git.dirty"] in {
+        "true",
+        "false",
+    }

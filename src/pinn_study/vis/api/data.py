@@ -136,9 +136,7 @@ def visualise_dataset(
     # =============================
     # Input / Target Comparison
     # =============================
-    distribution_comparison_path = (
-        output_dir / "distribution_comparison.png"
-    )
+    distribution_comparison_path = output_dir / "distribution_comparison.png"
 
     plot_distribution_comparison(
         {

@@ -22,9 +22,7 @@ def compute_solution_sensitivity(
     """Calculate |du/dx|."""
 
     if not x.requires_grad:
-        raise ValueError(
-            "x must have requires_grad=True."
-        )
+        raise ValueError("x must have requires_grad=True.")
 
     gradient = torch.autograd.grad(
         prediction,
@@ -68,6 +66,7 @@ def plot_solution_sensitivity(
 # =============================
 # Legacy Sensitivity Plot
 # =============================
+
 
 def plot_sensitivity(
     model,

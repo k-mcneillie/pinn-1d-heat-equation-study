@@ -29,7 +29,9 @@ def relative_error(
     epsilon: float = 1e-12,
 ) -> np.ndarray:
     """Calculate pointwise relative error."""
-    return np.abs(np.asarray(prediction) - np.asarray(analytical)) / np.maximum(np.abs(np.asarray(analytical)), epsilon)
+    return np.abs(np.asarray(prediction) - np.asarray(analytical)) / np.maximum(
+        np.abs(np.asarray(analytical)), epsilon
+    )
 
 
 # =============================
@@ -172,7 +174,9 @@ def plot_error(
                 output_path,
             )
 
-        return plot_error_distribution(prediction_values, analytical_values, output_path)
+        return plot_error_distribution(
+            prediction_values, analytical_values, output_path
+        )
 
     figure, axis = plt.subplots()
     axis.text(

@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import pytest
 
 from pinn_study.experiment.config import MLflowConfig

@@ -1,15 +1,15 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
-import os
 
 import torch
 from torch import autograd
 
 from pinn_study.analytical.heat_equation_1D import HeatEquation1D
 from pinn_study.data.card import DatasetCard
-from pinn_study.data.generator import HeatEquationGenerator, HeatEquationData
+from pinn_study.data.generator import HeatEquationData, HeatEquationGenerator
 from pinn_study.data.utils import save_dataset
 from pinn_study.experiment.config import ExperimentConfig, MLflowConfig
 from pinn_study.pinn.architecture.mlp.config import MLPConfig
@@ -25,11 +25,13 @@ from pinn_study.vis.api.experiment import visualise_experiment
 
 try:
     from pinn_study.experiment.mlflow import MLflowExperiment
+
     MLFLOW_AVAILABLE = True
 except ImportError:
     MLFLOW_AVAILABLE = False
 
 os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
+
 
 def build_dataset(session: Session, config: ExperimentConfig) -> HeatEquationData:
     generator = HeatEquationGenerator(
@@ -164,7 +166,9 @@ def run_training(
     training_config = TrainingConfig(
         epochs=config.epochs,
         learning_rate=config.learning_rate,
-        checkpoint=CheckpointConfig(enabled=False, interval=max(1, config.epochs // 5), save_best=True),
+        checkpoint=CheckpointConfig(
+            enabled=False, interval=max(1, config.epochs // 5), save_best=True
+        ),
     )
 
     trainer = Trainer(
@@ -249,7 +253,8 @@ def save_model_card(
         name=session.name,
         description=(
             "A PINN model trained for the 1D heat equation.",
-            "The architecture is a feedforward MLP trained with physics-informed losses.",
+            "The architecture is a feedforward MLP.",
+            "The model is trained with physics-informed losses.",
         ),
         architecture=architecture,
         parameters=parameters,
@@ -258,7 +263,7 @@ def save_model_card(
             "Provide a baseline PINN training workflow.",
         ],
         limitations=[
-            "Model is trained on a small collocation set and may not generalize broadly.",
+            "Trained on a small collocation set and may not generalize broadly.",
             "Validation is performed at a single fixed final time.",
         ],
         training=training_metadata,
@@ -310,7 +315,9 @@ def log_to_mlflow(
 
     experiment.log_artifact(model_path)
     experiment.log_artifacts(dataset_dir, artifact_path="dataset")
-    experiment.log_artifacts(session.path("visualisations"), artifact_path="visualisations")
+    experiment.log_artifacts(
+        session.path("visualisations"), artifact_path="visualisations"
+    )
     experiment.end_run()
     session.logger.info("MLflow run complete.")
 
@@ -343,7 +350,9 @@ def main() -> None:
         training_metadata={
             "epochs": config.epochs,
             "learning_rate": config.learning_rate,
-            "final_loss": float(trainer.result.losses[-1]) if trainer.result.losses else 0.0,
+            "final_loss": float(trainer.result.losses[-1])
+            if trainer.result.losses
+            else 0.0,
         },
     )
 

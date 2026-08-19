@@ -68,7 +68,9 @@ def plot_solution_heatmap(
     analytical_values = np.asarray(analytical)
 
     if predicted_values.ndim != 2 or analytical_values.ndim != 2:
-        return plot_solution_comparison(x_values, predicted_values, analytical_values, output_path)
+        return plot_solution_comparison(
+            x_values, predicted_values, analytical_values, output_path
+        )
 
     error_values = np.abs(predicted_values - analytical_values)
     selected_indices = np.linspace(0, len(t_values) - 1, num=5, dtype=int)
@@ -137,6 +139,7 @@ def plot_solution_heatmap(
 
 # =============================
 # Legacy Solution Plot
+
 
 def plot_solution(
     validation_data,
