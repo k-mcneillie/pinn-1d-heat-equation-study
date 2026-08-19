@@ -1,5 +1,7 @@
 .venv
 .env
 outputs
+mlruns
 *pycache*
 *egg*
+environment.yml

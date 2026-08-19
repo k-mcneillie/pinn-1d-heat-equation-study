@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any
+import os
 
 import torch
 from torch import autograd
@@ -28,6 +29,7 @@ try:
 except ImportError:
     MLFLOW_AVAILABLE = False
 
+os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
 
 def build_dataset(session: Session, config: ExperimentConfig) -> HeatEquationData:
     generator = HeatEquationGenerator(
@@ -162,7 +164,7 @@ def run_training(
     training_config = TrainingConfig(
         epochs=config.epochs,
         learning_rate=config.learning_rate,
-        checkpoint=CheckpointConfig(enabled=True, interval=max(1, config.epochs // 5), save_best=True),
+        checkpoint=CheckpointConfig(enabled=False, interval=max(1, config.epochs // 5), save_best=True),
     )
 
     trainer = Trainer(

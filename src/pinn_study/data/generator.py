@@ -120,8 +120,8 @@ class HeatEquationGenerator:
         self.t_min = t_min
         self.t_max = t_max
 
-        self.rng = torch.Generator().manual_seed(seed)
         self.device = device
+        self.rng = torch.Generator(device=self.device).manual_seed(seed)
 
     # A property decorator turns a class method into a read-only property and
     # allows you to access a method like an attribute. This is useful for
