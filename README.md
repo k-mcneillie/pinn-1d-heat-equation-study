@@ -1,6 +1,4 @@
-# PINN-Study — Physics-Informed Neural Networks Programme
-
-An independent, self-directed research and development programme building from first principles of Physics-Informed Neural Networks (PINNs) to a research contribution: applying learned surrogate modelling to the author's own dissertation research on topological superconductivity, benchmarked against a known analytical phase diagram.
+# PINNs - 1D Heat Equation
 
 ## What are Physics-Informed Neural Networks?
 
