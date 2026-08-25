@@ -7,7 +7,7 @@ name = "pinn-heat-1d"
 version = "0.1.0"
 description = "Physics-informed neural network solution of the one-dimensional heat equation."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [
     { name = "Konner McNeillie" }
 ]
