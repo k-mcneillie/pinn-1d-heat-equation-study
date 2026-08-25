@@ -15,4 +15,4 @@ dependencies:
   - seaborn=0.13.2
 
 pip:
-  - -e .
+  - -e . --no-deps
