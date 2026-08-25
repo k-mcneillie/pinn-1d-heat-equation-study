@@ -54,16 +54,3 @@ select = [
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
-[project]
-dependencies = [
-    "conda==26.3.2",
-    "mamba==2.5.0",
-    "pip==26.1.2",
-]
-
-[project]
-dependencies = [
-    "conda==26.3.2",
-    "mamba==2.5.0",
-    "pip==26.1.2",
-]
