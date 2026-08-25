@@ -5,3 +5,4 @@ mlruns
 *pycache*
 *egg*
 environment.yml
+.ruff_cache
